@@ -1,12 +1,19 @@
-import numpy as np
-import matplotlib.pyplot as plt
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.ensemble.partial_dependence import plot_partial_dependence
+from sklearn.ensemble.partial_dependence import partial_dependence
+from sklearn.metrics import confusion_matrix 
+from sklearn.metrics import roc_curve, auc
 from scipy import stats
 from pandas import DataFrame 
+from scipy.stats import norm 
+import numpy as np
+import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib.pyplot as plt
 import pandas as pd 
 import seaborn as sns 
 import math 
 import statsmodels.formula.api as smf
-from scipy.stats import norm
 
 # Import and clean data (data removed for privacy reasons)
 data_y2 = pd.read_csv("database_y2.csv")
@@ -17,18 +24,33 @@ data_y2 = data_y2[data_y2.IDumber != 2000]
 
 # Create dummy variables 
 sex = pd.get_dummies(data_y2['sex'], drop_first=True) 
-siblingsDiabetesType = pd.get_dummies(data_y2['siblingsDiabetesType'],drop_first=True) 
+siblingsDiabetesType = pd.get_dummies(data_y2['siblingsDiabetesType'],
+                                      drop_first=True) 
 probio = pd.get_dummies(data_y2['probio'], drop_first=True) 
 data_y2 = pd.concat([data_y2, sex,siblingsDiabetesType,probio], axis = 1)
 
 # Remove invalid candidates; related to : those visited clinic recently? 
-data_y2.loc[(data_y2['last_clinic_visit_agedys'] < 3285) & (data_y2['t1d']!=1), 'valid_candidate'] = 'InValid'
-data_y2.loc[(data_y2['last_clinic_visit_agedys'] >= 3285) & (data_y2['t1d'] ==1), 'valid_candidate'] = 'Valid'
-data_y2.loc[(data_y2['last_clinic_visit_agedys'] >= 3285) | (data_y2['t1d'] ==1), 'valid_candidate'] = 'Valid'
+data_y2.loc[(data_y2['last_clinic_visit_agedys'] < 3285) & (data_y2['t1d']!=1), 
+            'valid_candidate'] = 'InValid'
+data_y2.loc[(data_y2['last_clinic_visit_agedys'] >= 3285) & (data_y2['t1d'] ==1), 
+            'valid_candidate'] = 'Valid'
+data_y2.loc[(data_y2['last_clinic_visit_agedys'] >= 3285) | (data_y2['t1d'] ==1), 
+            'valid_candidate'] = 'Valid'
 data_y2 = data_y2[data_y2.valid_candidate != 'InValid']
 
-# Create dataset with relevant variables according professors in the clinical research facility
-data_y2.drop(['sex','siblingsDiabetesType','probio','status','exclude', 'cc', 'positive','maternal','indeterminate', 'last_clinic_visit','last_clinic_visit_agedys','t1d_diag_agedys','persist_conf_agedys','Sex','HLA_Category','HLA_Category_all','HLAscore_grs1','FID','PHENO', 'grs1sntile','grs1strat','grs1strat2','positive_all_time','persist_conf_ab_all_time','last_test','persist_conf_gad','persist_conf_ia2a','persist_conf_miaa','persist_conf_gadclass','persist_conf_ia2aclass','persist_conf_miaaclass','multiple_autoantibody','multiple_autoantibody_all_time','totdrug','imputed_min_bmiz','imputed_mean_bmiz','vitamin_c_mg_l','vitd_nmo_l','valid_candidate'], axis = 1, inplace=True)
+# Create dataset with relevant variables according professors in the clinical 
+# research facility
+data_y2.drop(['sex','siblingsDiabetesType','probio','status','exclude', 'cc',
+              'positive','maternal','indeterminate', 'last_clinic_visit',
+              'last_clinic_visit_agedys','t1d_diag_agedys','persist_conf_agedys',
+              'Sex','HLA_Category','HLA_Category_all','HLAscore_grs1','FID','PHENO', 
+              'grs1sntile','grs1strat','grs1strat2','positive_all_time',
+              'persist_conf_ab_all_time','last_test','persist_conf_gad',
+              'persist_conf_ia2a','persist_conf_miaa','persist_conf_gadclass',
+              'persist_conf_ia2aclass','persist_conf_miaaclass',
+              'multiple_autoantibody','multiple_autoantibody_all_time','totdrug',
+              'imputed_min_bmiz','imputed_mean_bmiz','vitamin_c_mg_l','vitd_nmo_l',
+              'valid_candidate'], axis = 1, inplace=True)
 
 
 ######
@@ -61,7 +83,14 @@ plt.ylabel('Density function')
 ######
 
 # Create array of all variables 
-variables_t1d = np.array(['FatherDiabetesType', 'Male', 'MotherDiabetesType', 'acute_sinusitis', 'before1m', 'c_section', 'common_cold_tot_day','country_cd', 'fathers_age', 'fdr', 'fevergrp_tot_day','gastro_tot_day','grs1', 'hla_category', 'influenza_tot_day', 'laryngitis_trac_tot_day', 'maternal_age', 'persist_conf_ab', 'race_ethnicity', 'resp_gest_inf','resp_tot_day', 'start_daycare_yr1', 'unknown', 'weight','yes'])
+variables_t1d = np.array(['FatherDiabetesType', 'Male', 'MotherDiabetesType', 
+                          'acute_sinusitis', 'before1m', 'c_section',
+                          'common_cold_tot_day','country_cd', 'fathers_age',
+                          'fdr', 'fevergrp_tot_day','gastro_tot_day','grs1',
+                          'hla_category', 'influenza_tot_day',
+                          'laryngitis_trac_tot_day', 'maternal_age', 'persist_conf_ab',
+                          'race_ethnicity', 'resp_gest_inf','resp_tot_day',
+                          'start_daycare_yr1', 'unknown', 'weight','yes'])
 
 # Create matrix of p values for the multiplicative linear interaction term of logistic regression 
 p_values_matrix_twointer = np.zeros([len(variables_t1d), len(variables_t1d)])
@@ -73,7 +102,8 @@ for i in range(len(variables_t1d)):
             p_values_matrix_twointer[i,j]= model_ij.pvalues[1]
         else:
             try:
-                model_ij= smf.logit(formula="t1d ~" + variables_t1d[i] +"+"+ variables_t1d[j] + "+" + variables_t1d[i]+":"+variables_t1d[j], data= data_y2).fit()
+                model_ij= smf.logit(formula="t1d ~" + variables_t1d[i] +"+"+ variables_t1d[j] + 
+                                    "+" + variables_t1d[i]+":"+variables_t1d[j], data= data_y2).fit()
                 p_values_matrix_twointer[i,j]= model_ij.pvalues[3]
             except :
                 #print("2")
@@ -81,14 +111,26 @@ for i in range(len(variables_t1d)):
 print(p_values_matrix_twointer) 
 
 # Set labels for matrix
-label_variables_t1d = np.array(['Father Diabetes Status','Male','Mother Diabetes Status','Acute sinusitis episodes','Probiotics before 1 month old ','Caesarean section','Common cold episodes','Country','Paternal age','First Dgree Relative','Fever episodes','Gastrointestinal infections ','Genetic risk score','HLA gene category', 'Influenza episodes','Laryngitis tracheitis episodes', 'Maternal age', 'Number of persistent antibodies ','Race / ethnicity','Maternal gestational respiratory infections',  'Respiratory infection episodes','Day-care before age 1', 'No Probiotics', 'Weight','Sibling Diabetes Status']) 
+label_variables_t1d = np.array(['Father Diabetes Status','Male','Mother Diabetes Status',
+                                'Acute sinusitis episodes','Probiotics before 1 month old ',
+                                'Caesarean section','Common cold episodes','Country','Paternal age',
+                                'First Dgree Relative','Fever episodes','Gastrointestinal infections ',
+                                'Genetic risk score','HLA gene category', 'Influenza episodes',
+                                'Laryngitis tracheitis episodes', 'Maternal age', 
+                                'Number of persistent antibodies ','Race / ethnicity',
+                                'Maternal gestational respiratory infections',
+                                'Respiratory infection episodes','Day-care before age 1', 'No Probiotics',
+                                'Weight','Sibling Diabetes Status']) 
 
 # Plot matrix 
 plt.figure(figsize = (40,30))
-p = sns.heatmap(p_values_matrix_twointer, annot=True,  linewidths=.5, yticklabels= label_variables_t1d, annot_kws={"size": 14},vmin=0, vmax=0.05) 
-plt.tick_params(axis='both', which='major',labelsize=20, labelbottom = False, bottom=False, top = False, labeltop=True)
+p = sns.heatmap(p_values_matrix_twointer, annot=True,  linewidths=.5, yticklabels= label_variables_t1d, 
+                annot_kws={"size": 14},vmin=0, vmax=0.05) 
+plt.tick_params(axis='both', which='major',labelsize=20, labelbottom = False, bottom=False, top = False,
+                labeltop=True)
 p.set_xticklabels(labels = label_variables_t1d, rotation= 90)
-p.set_title("A matrix showing the p-values of the multiplicative interaction terms in the logistic regression\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", fontsize=24, fontweight="bold")
+p.set_title("A matrix showing the p-values of the multiplicative interaction terms in the logistic 
+            regression\n", fontsize=24, fontweight="bold")
 #plt.savefig('MATRIX_0.05.pdf')
 
 # Just lower LHS triangle 
@@ -102,4 +144,36 @@ trilow[np.triu_indices(trilow.shape[0], k = 1)] = np.nan
 # Gradient boosting model and H statistic 
 ######
 
+data_y2_vars = data_y2[['country_cd', 'maternal_age','fathers_age', 'c_section', 'resp_gest_inf',
+                        'race_ethnicity', 'hla_category', 'fdr', 't1d', 'persist_conf_ab',
+                        'start_daycare_yr1', 'grs1','FatherDiabetesType','MotherDiabetesType',
+                        'weight','fevergrp_tot_day','common_cold_tot_day', 'laryngitis_trac_tot_day',
+                        'influenza_tot_day','acute_sinusitis', 'resp_tot_day', 'gastro_tot_day' ,'Male',
+                        'yes', 'before1m', 'unknown']]
 
+# Create x and y for variables and the T1d varibale = predictive y/n to T1D 
+X = data_y2_vars.drop('t1d', axis= 1)
+y = data_y2_vars['t1d']
+
+# Create train and test set, 70% training and 30% test
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=0)
+
+# Gradient Boosting Regressor 
+#clf = GradientBoostingRegressor(n_estimators=100, max_depth=4,learning_rate=0.1, loss='huber',random_state=1)
+clf = GradientBoostingRegressor(n_estimators=100, random_state=0)
+clf.fit(X_train, y_train)
+            
+# Compute accuracy 
+y_pred = clf.predict(X_test)
+predictions = [round(value) for value in y_pred]
+accuracy = accuracy_score(y_test, predictions)
+print("Accuracy: %.2f%%" % (accuracy * 100.0))
+
+# ROC curve 
+false_positive_rate, true_positive_rate, thresholds = roc_curve(y_test, y_pred)
+roc_auc = auc(false_positive_rate, true_positive_rate)
+#roc_auc
+
+print(confusion_matrix(y_test, predictions))    
+            
+         
