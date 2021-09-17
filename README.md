@@ -7,12 +7,12 @@ Type 1 diabetes (T1D) is an autoimmune disease that causes destruction of insuli
 ### Method 
 Use two statistical tests on two classifiers to gain complimentary information about the presence and strength of interactions between risk factors. 
 
-1: Linear classifier (logistic regression) with a multiplicative linear interaction term. Matrix of interaction term p-values.
-2: Non-linear classifier (gradient boosting). Matrix of H-statistic values. (Friedman, J. H., & Popescu, B.(2008). Predictive Learning Via Rule Ensembles. The Annals of Applied Statistics, Vol. 2, No. 3, 916–954, DOI: 10.1214/07-AOAS148.) 
+1. Linear classifier (logistic regression) with a multiplicative linear interaction term. Matrix of interaction term p-values.
+2. Non-linear classifier (gradient boosting). Matrix of H-statistic values. (Friedman, J. H., & Popescu, B.(2008). Predictive Learning Via Rule Ensembles. The Annals of Applied Statistics, Vol. 2, No. 3, 916–954, DOI: 10.1214/07-AOAS148.) 
 - Gradient Boosting Regressor, n_estimators=100, random_state=0
 
 ### Results 
-##### Key Findings
+#### Key Findings
 1. No significant linear interactions found 
 2. Non-linear interactions identified
 
