@@ -9,3 +9,23 @@ Use two statistical tests on two classifiers to gain complimentary information a
 
 1: Linear classifier (logistic regression) with a multiplicative linear interaction term. Matrix of interaction term p-values.
 2: Non-linear classifier (gradient boosting). Matrix of H-statistic values. (Friedman, J. H., & Popescu, B.(2008). Predictive Learning Via Rule Ensembles. The Annals of Applied Statistics, Vol. 2, No. 3, 916–954, DOI: 10.1214/07-AOAS148.) 
+- Gradient Boosting Regressor, n_estimators=100, random_state=0
+
+### Results 
+##### Key Findings
+1. No significant linear interactions found 
+2. Non-linear interactions identified
+
+See Figure. 
+1. Linear interactions: Matrix of p-values of the logistic regression interaction term, characterising a linear interaction.
+-  No p-values were significant when applying a significance level of 0.05 with Bonferroni 
+correction. Values enclosed by blue rectangles were significant before correction and so were explored by PDPs. The leading diagonal is the 
+p-value of a single variable logistic regression, showing only four variables were significant on their own.
+
+2. Non-linear interactions: A matrix of H-statistic values for the non-linear model
+- Higher H-statistic values indicate stronger interaction. Many interactions were identified. Due to the nature of the H-statistic, investigating 
+variance of the output of the partial dependence, this could indicate any type of interaction. 
+
+
+
+
