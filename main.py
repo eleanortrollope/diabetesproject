@@ -150,7 +150,7 @@ data_y2_vars = data_y2[['country_cd', 'maternal_age','fathers_age', 'c_section',
                         'weight','fevergrp_tot_day','common_cold_tot_day', 'laryngitis_trac_tot_day',
                         'influenza_tot_day','acute_sinusitis', 'resp_tot_day', 'gastro_tot_day' ,'Male',
                         'yes', 'before1m', 'unknown']]
-
+  
 # Create x and y for variables and the T1d varibale = predictive y/n to T1D 
 X = data_y2_vars.drop('t1d', axis= 1)
 y = data_y2_vars['t1d']
@@ -176,4 +176,108 @@ roc_auc = auc(false_positive_rate, true_positive_rate)
 
 print(confusion_matrix(y_test, predictions))    
             
-         
+###
+# Plot PDP 
+###
+
+
+print('Custom 3d plot via ``partial_dependence``')
+fig = plt.figure()
+
+target_feature = (1, 10)
+pdp, axes = partial_dependence(clf, target_feature,
+                                   X=X_train, grid_resolution=50)
+XX, YY = np.meshgrid(axes[0], axes[1])
+Z = pdp[0].reshape(list(map(np.size, axes))).T
+ax = Axes3D(fig)
+surf = ax.plot_surface(XX, YY, Z, rstride=1, cstride=1,
+                           cmap=plt.cm.BuPu, edgecolor='k')
+ax.set_xlabel(names[target_feature[0]])
+ax.set_ylabel(names[target_feature[1]])
+ax.set_zlabel('Partial dependence')
+#  pretty init view
+ax.view_init(elev=22, azim=122)
+plt.colorbar(surf)
+plt.suptitle('Partial dependence of t1d on maternal\n'
+              'age and grs1')
+plt.subplots_adjust(top=0.9)
+plt.savefig('z Mat age vs  grs PDP.png',dpi = 300)
+
+plt.show()
+           
+            
+            
+####
+# Function
+####
+def main():
+    """Convenience plot with ``partial_dependence_plots``"""
+    names = X.columns
+    features = [1, 10,(1, 10)]
+    fig, axs = plot_partial_dependence(clf, X_train, features,
+                                       feature_names=names,
+                                       n_jobs=3, grid_resolution=50)
+    fig.suptitle('Partial dependence of t1d on mat age and grs1\n'
+                 'for the dataset')
+    plt.subplots_adjust(top=0.9)  # tight_layout causes overlap with suptitle
+
+    print('Custom 3d plot via ``partial_dependence``')
+    fig = plt.figure()
+    
+    target_feature = (1, 10)
+    pdp, axes = partial_dependence(clf, target_feature,
+                                   X=X_train, grid_resolution=50)
+    XX, YY = np.meshgrid(axes[0], axes[1])
+    Z = pdp[0].reshape(list(map(np.size, axes))).T
+    ax = Axes3D(fig)
+    surf = ax.plot_surface(XX, YY, Z, rstride=1, cstride=1,
+                           cmap=plt.cm.BuPu, edgecolor='k')
+    ax.set_xlabel(names[target_feature[0]])
+    ax.set_ylabel(names[target_feature[1]])
+    ax.set_zlabel('Partial dependence')
+    #  pretty init view
+    ax.view_init(elev=22, azim=122)
+    plt.colorbar(surf)
+    plt.suptitle('Partial dependence of t1d on maternal\n'
+                 'age and grs1')
+    plt.subplots_adjust(top=0.9)
+
+    
+    plt.show()
+            
+# Needed on Windows because plot_partial_dependence uses multiprocessing
+if __name__ == '__main__':
+    main()
+
+            
+####
+# H statistic
+#### 
+
+from sklearn_gbmi import *
+
+h_all_pairs(clf, X_train)    
+
+data = {('FatherDiabetesType', 'Male'): 6.184560151146117e-16,...}
+            
+# Get the unique set of keys, sort them alphabetically
+keys = sorted(set(np.ravel(list(data.keys()))))
+
+# Create a matrix to store all the data
+mat2 = np.zeros((len(keys), len(keys)))
+
+for i, k1 in enumerate(keys):
+    for j, k2 in enumerate(keys):
+        # get the value from data.  if key is not in the data, use NaN
+        mat2[i,j] = data.get((k1, k2), 0)
+#print(mat2)
+
+
+# Seaborn matrix 
+plt.figure(figsize = (30,30))
+p = sns.heatmap(mat2,annot = True, linewidths=.5, yticklabels=keys)
+plt.tick_params(axis='both', which='major',labelsize=20)
+plt.tick_params(axis='both', which='major',labelsize=15, labelbottom = False, bottom=False, top = False, labeltop=True)
+p.set_xticklabels(labels = keys, rotation= 90)
+p.set_title("A matrix showing the H-statisticn\n\n\n\n\n\n\n\n\n", fontsize=15, fontweight="bold")   
+          
