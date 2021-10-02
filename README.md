@@ -26,6 +26,7 @@ p-value of a single variable logistic regression, showing only four variables we
 - Higher H-statistic values indicate stronger interaction. Many interactions were identified. Due to the nature of the H-statistic, investigating 
 variance of the output of the partial dependence, this could indicate any type of interaction. 
 
-
+A novel result is that there is interaction between variables that are not significant on their own, namely weight and 
+maternal age.
 
 
