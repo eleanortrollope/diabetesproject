@@ -30,8 +30,6 @@ A novel result is that there is interaction between variables that are not signi
 maternal age as well as weight and siblings with diabetes. See figures below. 
 
 
-![image](https://user-images.githubusercontent.com/59938778/141858695-a05b93e6-b593-43c5-b8c6-91d804f62777.png)
-
-![image](https://user-images.githubusercontent.com/59938778/141858748-4f94cd37-58b4-4ed7-b620-b7e3f8ce4e72.png)
+![image](https://user-images.githubusercontent.com/59938778/141858695-a05b93e6-b593-43c5-b8c6-91d804f62777.png)![image](https://user-images.githubusercontent.com/59938778/141858748-4f94cd37-58b4-4ed7-b620-b7e3f8ce4e72.png)
 
 
