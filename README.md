@@ -27,9 +27,7 @@ p-value of a single variable logistic regression, showing only four variables we
 variance of the output of the partial dependence, this could indicate any type of interaction. 
 
 A novel result is that there is interaction between variables that are not significant on their own, namely weight and 
-maternal age as well as weight and siblings with diabetes. See figures below. 
+diabetic sibling as well as maternal and paternal ages. See figures below. 
 
-
-![image](https://user-images.githubusercontent.com/59938778/141858695-a05b93e6-b593-43c5-b8c6-91d804f62777.png)![image](https://user-images.githubusercontent.com/59938778/141858748-4f94cd37-58b4-4ed7-b620-b7e3f8ce4e72.png)
-
+![image](https://user-images.githubusercontent.com/59938778/141859680-9855482e-3757-4522-86f9-146cd7d91558.png)   ![image](https://user-images.githubusercontent.com/59938778/141859539-008c0d79-daa3-4cf8-badf-bb043ab3f62b.png)
 
