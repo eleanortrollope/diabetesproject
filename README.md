@@ -14,7 +14,7 @@ Use linear and non-linear classifiers followed by statistical tests to gain info
 
 ### Results 
 #### Key Findings
-Non-linear interactions were identified and explored. Though no significant linear interactions were found.
+Non-linear interactions were identified and explored. No significant linear interactions were found.
 
 ![image](https://user-images.githubusercontent.com/59938778/141858960-93d2613a-99ee-4936-97f7-62c69910f4a7.png)
 
