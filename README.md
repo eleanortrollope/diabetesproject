@@ -1,21 +1,20 @@
-# Type 1 Diabetes Machine Learning Research Project
+# Machine Learning Research Project: Type 1 Diabetes
 Final year BSc research project entitled 'Identifying interactions between risk factors for Type 1 Diabetes'
 
 ### Background  
-Type 1 diabetes (T1D) is an autoimmune disease that causes destruction of insulin-producing cells. It is recognised to result from a complex interplay between environmental and genetic risk factors. Accurately predicting T1D is important to avoid severe complications at diagnosis and enable precision medicine. Current single-variable models are limited in their predictive power (Fig.1). Hence, exploring interactions between risk factors could extract more understanding of T1D risk and improve prediction models.
+Type 1 diabetes (T1D) is recognised to result from a complex interplay between environmental and genetic risk factors. Accurately predicting T1D is important to avoid severe complications at diagnosis and enable precision medicine. Current single-variable models are limited in their predictive power (Fig.1). Hence, exploring interactions between risk factors could extract more understanding of T1D risk and improve prediction models.
 
 ![image](https://user-images.githubusercontent.com/59938778/141861102-69783aff-047e-45e6-a91a-ff8af4cfc7c2.png)
 
 ### Method 
-Use two statistical tests on two classifiers to gain complimentary information about the presence and strength of interactions between risk factors. 
+Use linear and non-linear classifiers followed by statistical tests to gain information about the presence and strength of interactions between risk factors. 
 
-1. Linear classifier (logistic regression) with a multiplicative linear interaction term. Matrix of interaction term p-values.
-2. Non-linear classifier (gradient boosting). Matrix of H-statistic values. (Friedman, J. H., & Popescu, B.(2008). Predictive Learning Via Rule Ensembles. The Annals of Applied Statistics, Vol. 2, No. 3, 916–954, DOI: 10.1214/07-AOAS148.) (Gradient Boosting Regressor, n_estimators=100, random_state=0)
+1. Linear classifier (logistic regression) with a multiplicative linear interaction term. Generate a matrix of interaction term p-values.
+2. Non-linear classifier (gradient boosting). Generate a matrix of H-statistic values. (Friedman, J. H., & Popescu, B.(2008). Predictive Learning Via Rule Ensembles. The Annals of Applied Statistics, Vol. 2, No. 3, 916–954, DOI: 10.1214/07-AOAS148.) 
 
 ### Results 
 #### Key Findings
-1. No significant linear interactions found 
-2. Non-linear interactions identified
+Non-linear interactions were identified and explored. Though no significant linear interactions were found.
 
 ![image](https://user-images.githubusercontent.com/59938778/141858960-93d2613a-99ee-4936-97f7-62c69910f4a7.png)
 
