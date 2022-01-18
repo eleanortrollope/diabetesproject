@@ -258,7 +258,7 @@ from sklearn_gbmi import *
 
 h_all_pairs(clf, X_train)    
 
-data = {('FatherDiabetesType', 'Male'): 6.184560151146117e-16,...}
+data = {('FatherDiabetesType', 'Male'): _ ,...}
             
 # Get the unique set of keys, sort them alphabetically
 keys = sorted(set(np.ravel(list(data.keys()))))
